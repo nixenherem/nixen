@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nixen — admin login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <main class="login-shell">
+    <section class="login-panel">
+      <h1>Admin</h1>
+
+      <label>
+        Password
+        <input id="password" type="password" autocomplete="current-password">
+      </label>
+
+      <button id="loginButton" type="button">Sign in</button>
+      <p id="loginMessage" class="message" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <script>
+    const password = document.getElementById("password");
+    const loginButton = document.getElementById("loginButton");
+    const loginMessage = document.getElementById("loginMessage");
+
+    async function login() {
+      loginButton.disabled = true;
+      loginMessage.textContent = "";
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: password.value })
+        });
+
+        if (!response.ok) {
+          loginMessage.textContent = "Incorrect password.";
+          return;
+        }
+
+        location.href = "/admin/";
+      } catch {
+        loginMessage.textContent = "Could not sign in.";
+      } finally {
+        loginButton.disabled = false;
+      }
+    }
+
+    loginButton.addEventListener("click", login);
+    password.addEventListener("keydown", event => {
+      if (event.key === "Enter") login();
+    });
+  </script>
+</body>
+</html>

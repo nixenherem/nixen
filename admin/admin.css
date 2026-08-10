@@ -1,0 +1,280 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --background: #0b0b0b;
+  --surface: #121212;
+  --surface-2: #171717;
+  --border: #2b2b2b;
+  --text: #f1f1f1;
+  --muted: #909090;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  font-weight: 400;
+}
+
+button {
+  cursor: pointer;
+}
+
+.admin-shell {
+  width: min(calc(100% - 32px), 980px);
+  margin: 0 auto;
+  padding: 42px 0 90px;
+}
+
+.admin-header,
+.section-heading,
+.panel-actions,
+.completion-top,
+.completion-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-header {
+  margin-bottom: 30px;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 7px;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+h2 {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.admin-header p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.new-level-panel,
+.completion-item,
+.login-panel {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+}
+
+.new-level-panel {
+  padding: 18px;
+  margin-bottom: 30px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+label {
+  display: block;
+  color: #aaa;
+  font-size: 0.72rem;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  outline: none;
+  background: #0e0e0e;
+  color: var(--text);
+}
+
+input {
+  padding: 10px 11px;
+}
+
+textarea {
+  padding: 10px 11px;
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #666;
+}
+
+.full-label {
+  margin-top: 12px;
+}
+
+.panel-actions {
+  margin-top: 14px;
+}
+
+button {
+  padding: 9px 12px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background: #eee;
+  color: #111;
+}
+
+button:hover {
+  background: #fff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.secondary-button {
+  border-color: #333;
+  background: #171717;
+  color: #ddd;
+}
+
+.secondary-button:hover {
+  background: #202020;
+}
+
+.danger-button {
+  border-color: #4a2a2a;
+  background: #201313;
+  color: #d9a5a5;
+}
+
+.danger-button:hover {
+  background: #2a1717;
+}
+
+.editor-section {
+  margin-top: 8px;
+}
+
+.section-heading {
+  margin-bottom: 10px;
+}
+
+.section-heading h2 {
+  margin: 0;
+}
+
+.completion-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.completion-item {
+  padding: 16px;
+}
+
+.completion-top {
+  margin-bottom: 14px;
+}
+
+.completion-name {
+  font-size: 0.95rem;
+}
+
+.completion-position {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.rank-label {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+.completion-actions {
+  margin-top: 14px;
+  justify-content: flex-end;
+}
+
+.order-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.order-buttons button {
+  min-width: 38px;
+}
+
+.message,
+.aredl-preview {
+  min-height: 1.2em;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.login-shell {
+  width: min(calc(100% - 32px), 380px);
+  margin: 0 auto;
+  padding-top: 16vh;
+}
+
+.login-panel {
+  padding: 20px;
+}
+
+.login-panel label {
+  margin: 20px 0 12px;
+}
+
+.login-panel button {
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  .admin-shell {
+    width: min(calc(100% - 20px), 980px);
+    padding-top: 24px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .completion-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .completion-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .completion-actions button {
+    width: 100%;
+  }
+}

@@ -1,45 +1,17 @@
-// ============================================================
-// YOUR COMPLETIONS
-//
-// levelId:
-//   Geometry Dash level ID. The site uses this to find the level's
-//   current AREDL name and position automatically.
-//
-// fallbackName:
-//   Only used if AREDL is temporarily unavailable.
-//
-// image:
-//   For now, upload the image directly beside index.html.
-// ============================================================
+const levelList = document.getElementById("levelList");
+const statusMessage = document.getElementById("statusMessage");
 
-const levels = [
-  {
-    levelId: 88136707,
-    fallbackName: "Sky Shredder",
-    attempts: "—",
-    completed: "—",
-    worstFail: "—",
-    video: "",
-    image: "sky-shredder.jpg",
-    note: ""
+async function getJSON(url) {
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" }
+  });
+
+  if (!response.ok) {
+    throw new Error(`${url} returned ${response.status}`);
   }
 
-  // Add more levels below:
-  //
-  // ,
-  // {
-  //   levelId: 12345678,
-  //   fallbackName: "Level Name",
-  //   attempts: "12,345",
-  //   completed: "Aug 10, 2026",
-  //   worstFail: "93%",
-  //   video: "https://youtube.com/...",
-  //   image: "level-name.jpg",
-  //   note: ""
-  // }
-];
-
-const levelList = document.getElementById("levelList");
+  return response.json();
+}
 
 function normalizeAredlLevels(payload) {
   if (Array.isArray(payload)) return payload;
@@ -51,42 +23,6 @@ function normalizeAredlLevels(payload) {
   }
 
   return [];
-}
-
-async function loadAredlData() {
-  try {
-    const response = await fetch("/api/aredl", {
-      headers: { Accept: "application/json" }
-    });
-
-    if (!response.ok) {
-      throw new Error(`AREDL request failed with ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const aredlLevels = normalizeAredlLevels(payload);
-
-    const byId = new Map(
-      aredlLevels.map(level => [String(level.level_id), level])
-    );
-
-    levels.forEach(level => {
-      const match = byId.get(String(level.levelId));
-
-      level.name = match?.name || level.fallbackName || `Level ${level.levelId}`;
-      level.globalRank =
-        Number.isFinite(Number(match?.position))
-          ? Number(match.position)
-          : null;
-    });
-  } catch (error) {
-    console.error("Could not load AREDL data:", error);
-
-    levels.forEach(level => {
-      level.name = level.fallbackName || `Level ${level.levelId}`;
-      level.globalRank = null;
-    });
-  }
 }
 
 function formatGlobalRank(rank) {
@@ -126,17 +62,17 @@ function createCard(level, index) {
           <div class="detail-grid">
             <div class="detail-item">
               <span class="detail-label">Attempts</span>
-              <span class="detail-value">${escapeHTML(String(level.attempts ?? "—"))}</span>
+              <span class="detail-value">${displayValue(level.attempts)}</span>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">Completed</span>
-              <span class="detail-value">${escapeHTML(String(level.completed ?? "—"))}</span>
+              <span class="detail-value">${displayValue(level.completed)}</span>
             </div>
 
             <div class="detail-item">
               <span class="detail-label">Worst Fail</span>
-              <span class="detail-value">${escapeHTML(String(level.worstFail ?? "—"))}</span>
+              <span class="detail-value">${displayValue(level.worst_fail)}</span>
             </div>
           </div>
 
@@ -167,30 +103,26 @@ function createCard(level, index) {
     if (!isOpen) {
       article.classList.add("open");
       button.setAttribute("aria-expanded", "true");
-
-      const slug = slugify(level.name);
-      history.replaceState(null, "", `#${slug}`);
+      history.replaceState(null, "", `#${slugify(level.name)}`);
     } else {
-      history.replaceState(
-        null,
-        "",
-        window.location.pathname + window.location.search
-      );
+      history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   });
 
   return article;
 }
 
-function renderLevels() {
+function renderLevels(levels) {
   levelList.innerHTML = "";
 
   levels.forEach((level, index) => {
     levelList.appendChild(createCard(level, index));
   });
+
+  statusMessage.textContent = levels.length ? "" : "No completions added yet.";
 }
 
-function openHashLevel() {
+function openHashLevel(levels) {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
 
@@ -202,6 +134,11 @@ function openHashLevel() {
 
   card.classList.add("open");
   card.querySelector(".level-header")?.setAttribute("aria-expanded", "true");
+}
+
+function displayValue(value) {
+  const text = value === null || value === undefined || value === "" ? "—" : String(value);
+  return escapeHTML(text);
 }
 
 function slugify(text) {
@@ -226,17 +163,41 @@ function escapeAttribute(value) {
 }
 
 async function init() {
-  // Show fallback data immediately.
-  levels.forEach(level => {
-    level.name = level.fallbackName || `Level ${level.levelId}`;
-    level.globalRank = null;
-  });
-  renderLevels();
+  try {
+    const [completionsPayload, aredlPayload] = await Promise.all([
+      getJSON("/api/completions"),
+      getJSON("/api/aredl")
+    ]);
 
-  // Then replace the name/position with live AREDL data.
-  await loadAredlData();
-  renderLevels();
-  openHashLevel();
+    const completions = Array.isArray(completionsPayload)
+      ? completionsPayload
+      : completionsPayload.completions || [];
+
+    const aredlLevels = normalizeAredlLevels(aredlPayload);
+    const aredlById = new Map(
+      aredlLevels.map(level => [String(level.level_id), level])
+    );
+
+    const levels = completions.map(completion => {
+      const match = aredlById.get(String(completion.level_id));
+
+      return {
+        ...completion,
+        name: match?.name || completion.fallback_name || `Level ${completion.level_id}`,
+        globalRank: Number.isFinite(Number(match?.position))
+          ? Number(match.position)
+          : null
+      };
+    });
+
+    renderLevels(levels);
+    openHashLevel(levels);
+  } catch (error) {
+    console.error(error);
+    levelList.innerHTML = "";
+    statusMessage.textContent =
+      "The list could not be loaded. Check the Cloudflare database binding.";
+  }
 }
 
 init();

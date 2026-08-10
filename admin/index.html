@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nixen — admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <h1>Demon list editor</h1>
+        <p>Add levels and edit the stats shown on the public page.</p>
+      </div>
+
+      <button id="logoutButton" class="secondary-button" type="button">Sign out</button>
+    </header>
+
+    <section class="new-level-panel">
+      <h2>Add completion</h2>
+
+      <div class="form-grid">
+        <label>
+          Level ID
+          <input id="newLevelId" inputmode="numeric" placeholder="88136707">
+        </label>
+
+        <label>
+          Attempts
+          <input id="newAttempts" placeholder="21,483">
+        </label>
+
+        <label>
+          Completed
+          <input id="newCompleted" placeholder="Aug 10, 2026">
+        </label>
+
+        <label>
+          Worst fail
+          <input id="newWorstFail" placeholder="96%">
+        </label>
+
+        <label>
+          Video URL
+          <input id="newVideo" placeholder="https://youtube.com/...">
+        </label>
+
+        <label>
+          Image filename / URL
+          <input id="newImage" placeholder="sky-shredder.png">
+        </label>
+      </div>
+
+      <label class="full-label">
+        Note
+        <textarea id="newNote" rows="2"></textarea>
+      </label>
+
+      <div class="panel-actions">
+        <span id="newLevelPreview" class="aredl-preview"></span>
+        <button id="addButton" type="button">Add completion</button>
+      </div>
+    </section>
+
+    <section class="editor-section">
+      <div class="section-heading">
+        <h2>Completions</h2>
+        <button id="saveOrderButton" class="secondary-button" type="button">Save order</button>
+      </div>
+
+      <div id="completionEditor" class="completion-editor"></div>
+    </section>
+
+    <p id="adminMessage" class="message" aria-live="polite"></p>
+  </main>
+
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

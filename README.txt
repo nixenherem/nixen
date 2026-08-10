@@ -1,91 +1,123 @@
-NIXEN DEMON LIST — V3
+NIXEN DEMON LIST — V4
 
 WHAT CHANGED
 ------------
-- Removed the search bar entirely.
-- Sky Shredder now uses its Geometry Dash level ID: 88136707.
-- Level names and AREDL positions are fetched automatically.
-- The browser calls your own /api/aredl endpoint.
-- A Cloudflare Pages Function proxies the AREDL API.
-- The card currently shows only the level name in the center.
-- Attempts, completion date, worst fail and video remain local stats.
+- Level rectangles are about 1.5x taller.
+  Desktop: 162px.
+  Mobile: 144px.
+- The public list is now database-backed.
+- Added /admin for editing your completions.
+- Added password-protected admin sessions.
+- Added add/edit/delete/reorder controls.
+- AREDL still supplies live level names and positions.
+- Sky Shredder uses sky-shredder.png.
 
-IMPORTANT: NEW FOLDER
----------------------
-This version has:
+IMPORTANT
+---------
+The admin panel will NOT work until you do the Cloudflare setup below.
 
+1. UPLOAD THE FILES
+-------------------
+Upload everything in this ZIP to your GitHub repo while keeping the folders.
+
+Important folders:
+
+admin/
 functions/
-  api/
-    aredl.js
+functions/_lib/
+functions/admin/
+functions/api/
+functions/api/admin/
 
-You need to preserve that folder structure in GitHub.
+2. CREATE A D1 DATABASE
+-----------------------
+Cloudflare dashboard:
+Workers & Pages > D1 SQL Database > Create
 
-Your repo should look like:
+Suggested name:
+nixen-demonlist
 
-index.html
-style.css
-script.js
-sky-shredder.jpg
-functions/
-  api/
-    aredl.js
+Open the database's SQL console and run everything in schema.sql.
 
-HOW THE AREDL LOOKUP WORKS
---------------------------
-In script.js:
+The schema also adds Sky Shredder as the first completion.
 
-{
-  levelId: 88136707,
-  fallbackName: "Sky Shredder",
-  ...
-}
+3. BIND D1 TO YOUR PAGES PROJECT
+--------------------------------
+Cloudflare dashboard:
+Workers & Pages > nixen > Settings > Bindings
 
-The site fetches AREDL's full level list once.
+Add a D1 database binding.
 
-It finds the object where:
+Variable / binding name MUST be:
 
-level_id === 88136707
+DB
 
-and then uses that object's:
+Choose the nixen-demonlist database.
 
-name
-position
+Do this for Production.
+If Cloudflare shows a separate Preview binding option, add DB there too
+if you want preview deployments to work.
 
-So if Sky Shredder moves from #181 to #182, the website can display
-the new placement without you editing script.js.
+4. CREATE YOUR ADMIN SECRETS
+----------------------------
+Cloudflare dashboard:
+Workers & Pages > nixen > Settings > Variables and Secrets
 
-WHY THERE IS A CLOUDFLARE FUNCTION
-----------------------------------
-The page fetches:
+Add these as encrypted secrets:
 
-/api/aredl
+ADMIN_PASSWORD
+ADMIN_SESSION_SECRET
 
-instead of contacting api.aredl.net directly from the browser.
+ADMIN_PASSWORD:
+Choose the password you want to use at /admin-login.
 
-Cloudflare then contacts AREDL server-side. This makes the setup more
-reliable if the AREDL API does not allow browser cross-origin requests.
+ADMIN_SESSION_SECRET:
+Use a long random value. It is NOT your login password.
+Example format only:
+a-long-random-private-string-with-many-characters
 
-ADMIN EDITOR (NEXT STEP)
-------------------------
-Do not make an "admin" button that is merely hidden with CSS/JavaScript.
-Anyone could reveal it.
+Do not put either secret in GitHub.
 
-The proper setup will be:
+5. DEPLOY
+---------
+After GitHub deploys the updated project:
 
-/demonlist       public page
-/admin           private editor
+Public list:
+https://nixen.pages.dev/
 
-Cloudflare Access authenticates /admin.
-Cloudflare D1 stores your completion data.
-Pages Functions read/write the database.
+Login:
+https://nixen.pages.dev/admin-login
 
-Then you can add/edit:
-- level ID
-- attempts
-- completion date
-- worst fail
-- YouTube URL
-- image path
-- note
+Editor:
+https://nixen.pages.dev/admin/
 
-The level name and AREDL position still come automatically from AREDL.
+There is intentionally no public admin button.
+
+6. SCREENSHOTS
+--------------
+For now, screenshots still live in your GitHub repo.
+
+Example:
+sky-shredder.png
+
+Then the Image field in /admin should be:
+
+sky-shredder.png
+
+You can also enter a full image URL.
+
+A later version can use Cloudflare R2 so you can upload screenshots
+directly from /admin too.
+
+ADMIN CAN EDIT
+--------------
+- Level ID
+- Attempts
+- Completion date/text
+- Worst fail
+- Video URL
+- Image filename or image URL
+- Note
+- List order
+
+The AREDL name and position are automatic and are not stored manually.

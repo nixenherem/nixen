@@ -10,17 +10,12 @@ export async function onRequestGet() {
     });
 
     if (!response.ok) {
-      return new Response(
-        JSON.stringify({
+      return Response.json(
+        {
           error: "AREDL returned an error",
           status: response.status
-        }),
-        {
-          status: 502,
-          headers: {
-            "Content-Type": "application/json; charset=utf-8"
-          }
-        }
+        },
+        { status: 502 }
       );
     }
 
@@ -33,17 +28,10 @@ export async function onRequestGet() {
         "Cache-Control": "public, max-age=300"
       }
     });
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        error: "Could not reach AREDL"
-      }),
-      {
-        status: 502,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        }
-      }
+  } catch {
+    return Response.json(
+      { error: "Could not reach AREDL" },
+      { status: 502 }
     );
   }
 }
