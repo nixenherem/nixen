@@ -1,33 +1,50 @@
-NIXEN DEMON LIST — STARTER PROTOTYPE
+NIXEN DEMON LIST — V2
 
-UPLOAD TO GITHUB
-1. Open your nixen GitHub repository.
-2. Replace your existing index.html with this index.html.
-3. Add style.css and script.js in the same main folder.
-4. Create a folder named images.
-5. Upload screenshots into images.
-6. Commit the changes. Cloudflare Pages should redeploy automatically.
+CHANGES IN THIS VERSION
+-----------------------
+- Removed all title / intro / stats text from the top.
+- Changed font to Montserrat.
+- Removed heavy/bold font weights.
+- Removed the enjoyment category.
+- Removed the page gradients and decorative glows.
+- Changed the page background to a plain solid dark color.
+- Simplified the image setup: screenshots can sit directly in the repo root.
+
+UPLOAD THESE FILES TO YOUR GITHUB REPO
+--------------------------------------
+index.html
+style.css
+script.js
+
+You do NOT need to make an images folder yet.
+
+ADDING A SCREENSHOT
+-------------------
+Say you want Sky Shredder to use:
+
+sky-shredder.jpg
+
+Upload that JPG directly to the same place as:
+
+index.html
+style.css
+script.js
+
+Then script.js should contain:
+
+image: "sky-shredder.jpg"
+
+Later, if the site grows, moving screenshots into an /images folder is easy.
 
 EDITING LEVELS
-Open script.js. The const levels = [...] section at the top is the only part you normally need to edit.
+--------------
+Open script.js and edit the objects inside:
 
-The order is your personal ranking:
-first item = #1
-second item = #2
-etc.
+const levels = [
+  ...
+];
 
-Example:
-{
-  name: "Sky Shredder",
-  creator: "Creator",
-  globalRank: 181,
-  attempts: "12,345",
-  completed: "Aug 10, 2026",
-  worstFail: "93%",
-  enjoyment: "9/10",
-  video: "https://youtube.com/...",
-  image: "images/sky-shredder.jpg",
-  note: "Optional note."
-}
+The order controls your personal rank on the left.
 
-Later, globalRank can be replaced with an API lookup.
+globalRank controls the number on the right for now.
+Later we can connect that to an API.

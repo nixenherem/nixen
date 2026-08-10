@@ -3,51 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#07080c" />
-  <title>nixen — Demon List</title>
+  <meta name="theme-color" content="#0b0b0b" />
+  <title>nixen</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page-glow page-glow-one"></div>
-  <div class="page-glow page-glow-two"></div>
-
   <main class="site-shell">
-    <header class="hero">
-      <p class="eyebrow">GEOMETRY DASH</p>
-      <h1>nixen</h1>
-      <p class="subtitle">My hardest completions, ranked.</p>
-
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-value" id="completionCount">0</span>
-          <span class="stat-label">Completions</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="hardestName">—</span>
-          <span class="stat-label">Hardest</span>
-        </div>
-        <div class="stat">
-          <span class="stat-value" id="lastUpdated">—</span>
-          <span class="stat-label">Updated</span>
-        </div>
-      </div>
-    </header>
+    <!-- Intentionally blank for now.
+         Later, your main-site navigation/header can go here. -->
 
     <section class="toolbar" aria-label="List controls">
       <div class="search-wrap">
         <svg aria-hidden="true" viewBox="0 0 24 24">
           <path d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
         </svg>
-        <input id="searchInput" type="search" placeholder="Search levels..." autocomplete="off" aria-label="Search levels" />
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search levels"
+          autocomplete="off"
+          aria-label="Search levels"
+        />
       </div>
+
       <div class="results-text" id="resultsText"></div>
     </section>
 
     <section id="levelList" class="level-list" aria-live="polite"></section>
-    <div id="emptyState" class="empty-state" hidden><p>No levels found.</p></div>
+
+    <div id="emptyState" class="empty-state" hidden>
+      <p>No levels found.</p>
+    </div>
   </main>
 
   <script src="script.js"></script>
