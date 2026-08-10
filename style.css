@@ -7,7 +7,7 @@
   --card: #141414;
   --border: #2a2a2a;
   --text: #f2f2f2;
-  --muted: #a0a0a0;
+  --muted: #999;
   --max-width: 1080px;
 }
 
@@ -24,8 +24,7 @@ body {
   font-weight: 400;
 }
 
-button,
-input {
+button {
   font: inherit;
   font-weight: 400;
 }
@@ -34,55 +33,6 @@ input {
   width: min(calc(100% - 32px), var(--max-width));
   margin: 0 auto;
   padding: 48px 0 100px;
-}
-
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 14px;
-}
-
-.search-wrap {
-  position: relative;
-  flex: 1;
-}
-
-.search-wrap svg {
-  position: absolute;
-  top: 50%;
-  left: 15px;
-  width: 17px;
-  height: 17px;
-  transform: translateY(-50%);
-  fill: none;
-  stroke: #777;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-}
-
-.search-wrap input {
-  width: 100%;
-  padding: 12px 15px 12px 42px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  outline: none;
-  background: #111;
-  color: var(--text);
-}
-
-.search-wrap input:focus {
-  border-color: #555;
-}
-
-.search-wrap input::placeholder {
-  color: #777;
-}
-
-.results-text {
-  flex: 0 0 auto;
-  color: #777;
-  font-size: 0.8rem;
 }
 
 .level-list {
@@ -161,17 +111,6 @@ input {
   font-size: clamp(1.3rem, 3.5vw, 2rem);
   font-weight: 400;
   line-height: 1.1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.level-creator {
-  display: block;
-  margin-top: 7px;
-  overflow: hidden;
-  color: #bbb;
-  font-size: 0.75rem;
-  font-weight: 400;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -265,7 +204,6 @@ input {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
   padding: 9px 11px;
   border: 1px solid #333;
   border-radius: 5px;
@@ -285,26 +223,10 @@ input {
   pointer-events: none;
 }
 
-.empty-state {
-  padding: 50px 20px;
-  text-align: center;
-  color: #777;
-}
-
 @media (max-width: 720px) {
   .site-shell {
     width: min(calc(100% - 20px), var(--max-width));
     padding-top: 28px;
-  }
-
-  .toolbar {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .results-text {
-    padding-left: 2px;
   }
 
   .level-header {
@@ -324,10 +246,6 @@ input {
 
   .level-name {
     font-size: clamp(1rem, 5vw, 1.4rem);
-  }
-
-  .level-creator {
-    font-size: 0.68rem;
   }
 
   .detail-grid {

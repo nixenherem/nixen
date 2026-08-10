@@ -1,76 +1,96 @@
-// The order of this array controls the left-side rank:
-// first level = #1, second = #2, etc.
+// ============================================================
+// YOUR COMPLETIONS
 //
-// For screenshots, just upload the image file directly into the
-// main/root of your GitHub repo for now.
-// Example: if image is "sky-shredder.jpg", put sky-shredder.jpg
-// beside index.html, style.css, and script.js.
+// levelId:
+//   Geometry Dash level ID. The site uses this to find the level's
+//   current AREDL name and position automatically.
+//
+// fallbackName:
+//   Only used if AREDL is temporarily unavailable.
+//
+// image:
+//   For now, upload the image directly beside index.html.
+// ============================================================
 
 const levels = [
   {
-    name: "Sky Shredder",
-    creator: "Creator",
-    globalRank: 181,
+    levelId: 88136707,
+    fallbackName: "Sky Shredder",
     attempts: "—",
     completed: "—",
     worstFail: "—",
     video: "",
     image: "sky-shredder.jpg",
     note: ""
-  },
-  {
-    name: "Level Two",
-    creator: "Creator",
-    globalRank: 240,
-    attempts: "—",
-    completed: "—",
-    worstFail: "—",
-    video: "",
-    image: "level-two.jpg",
-    note: ""
-  },
-  {
-    name: "Level Three",
-    creator: "Creator",
-    globalRank: 315,
-    attempts: "—",
-    completed: "—",
-    worstFail: "—",
-    video: "",
-    image: "level-three.jpg",
-    note: ""
-  },
-  {
-    name: "Level Four",
-    creator: "Creator",
-    globalRank: 420,
-    attempts: "—",
-    completed: "—",
-    worstFail: "—",
-    video: "",
-    image: "level-four.jpg",
-    note: ""
-  },
-  {
-    name: "Level Five",
-    creator: "Creator",
-    globalRank: null,
-    attempts: "—",
-    completed: "—",
-    worstFail: "—",
-    video: "",
-    image: "level-five.jpg",
-    note: ""
   }
+
+  // Add more levels below:
+  //
+  // ,
+  // {
+  //   levelId: 12345678,
+  //   fallbackName: "Level Name",
+  //   attempts: "12,345",
+  //   completed: "Aug 10, 2026",
+  //   worstFail: "93%",
+  //   video: "https://youtube.com/...",
+  //   image: "level-name.jpg",
+  //   note: ""
+  // }
 ];
 
 const levelList = document.getElementById("levelList");
-const searchInput = document.getElementById("searchInput");
-const resultsText = document.getElementById("resultsText");
-const emptyState = document.getElementById("emptyState");
+
+function normalizeAredlLevels(payload) {
+  if (Array.isArray(payload)) return payload;
+
+  if (payload && typeof payload === "object") {
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.levels)) return payload.levels;
+    if (Array.isArray(payload.results)) return payload.results;
+  }
+
+  return [];
+}
+
+async function loadAredlData() {
+  try {
+    const response = await fetch("/api/aredl", {
+      headers: { Accept: "application/json" }
+    });
+
+    if (!response.ok) {
+      throw new Error(`AREDL request failed with ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const aredlLevels = normalizeAredlLevels(payload);
+
+    const byId = new Map(
+      aredlLevels.map(level => [String(level.level_id), level])
+    );
+
+    levels.forEach(level => {
+      const match = byId.get(String(level.levelId));
+
+      level.name = match?.name || level.fallbackName || `Level ${level.levelId}`;
+      level.globalRank =
+        Number.isFinite(Number(match?.position))
+          ? Number(match.position)
+          : null;
+    });
+  } catch (error) {
+    console.error("Could not load AREDL data:", error);
+
+    levels.forEach(level => {
+      level.name = level.fallbackName || `Level ${level.levelId}`;
+      level.globalRank = null;
+    });
+  }
+}
 
 function formatGlobalRank(rank) {
-  return Number.isFinite(rank) ? `#${rank}` : "Unranked";
+  return Number.isFinite(rank) ? `#${rank}` : "—";
 }
 
 function createCard(level, index) {
@@ -91,7 +111,6 @@ function createCard(level, index) {
 
       <span class="level-title-wrap">
         <span class="level-name">${escapeHTML(level.name)}</span>
-        <span class="level-creator">${escapeHTML(level.creator || "")}</span>
       </span>
 
       <span class="global-rank ${Number.isFinite(level.globalRank) ? "" : "unranked"}">
@@ -152,40 +171,23 @@ function createCard(level, index) {
       const slug = slugify(level.name);
       history.replaceState(null, "", `#${slug}`);
     } else {
-      history.replaceState(null, "", window.location.pathname + window.location.search);
+      history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search
+      );
     }
   });
 
   return article;
 }
 
-function renderLevels(items = levels) {
+function renderLevels() {
   levelList.innerHTML = "";
 
-  items.forEach(({ level, originalIndex }) => {
-    levelList.appendChild(createCard(level, originalIndex));
+  levels.forEach((level, index) => {
+    levelList.appendChild(createCard(level, index));
   });
-
-  const total = items.length;
-  resultsText.textContent =
-    total === levels.length ? `${levels.length} levels` : `${total} of ${levels.length}`;
-
-  emptyState.hidden = total !== 0;
-}
-
-function filterLevels() {
-  const query = searchInput.value.trim().toLowerCase();
-
-  const filtered = levels
-    .map((level, originalIndex) => ({ level, originalIndex }))
-    .filter(({ level }) => {
-      return (
-        level.name.toLowerCase().includes(query) ||
-        (level.creator || "").toLowerCase().includes(query)
-      );
-    });
-
-  renderLevels(filtered);
 }
 
 function openHashLevel() {
@@ -203,7 +205,7 @@ function openHashLevel() {
 }
 
 function slugify(text) {
-  return text
+  return String(text)
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
@@ -223,7 +225,18 @@ function escapeAttribute(value) {
   return escapeHTML(String(value));
 }
 
-searchInput.addEventListener("input", filterLevels);
+async function init() {
+  // Show fallback data immediately.
+  levels.forEach(level => {
+    level.name = level.fallbackName || `Level ${level.levelId}`;
+    level.globalRank = null;
+  });
+  renderLevels();
 
-renderLevels(levels.map((level, originalIndex) => ({ level, originalIndex })));
-openHashLevel();
+  // Then replace the name/position with live AREDL data.
+  await loadAredlData();
+  renderLevels();
+  openHashLevel();
+}
+
+init();
